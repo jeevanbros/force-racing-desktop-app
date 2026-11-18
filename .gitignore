@@ -1,0 +1,35 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# PyInstaller / Build Artifacts
+build/
+dist/
+*.manifest
+*.spec.bak
+
+# Large Executables (> 100 MB)
+# Distributed via GitHub Releases:
+ForceRacing-x64.exe
+ForceRacing-x64.zip
+*.exe.log
+
+# Local databases and runtime journals
+*.db-journal
+*.sqlite3-journal
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# OS / Editor files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.vscode/
+.idea/
