@@ -1,0 +1,47 @@
+name: Verify Android APK
+
+on:
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Install and launch the app on an emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 30
+          arch: x86_64
+          profile: pixel_5
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          script: |
+            adb install -r ForceRacing-Android-APK.apk
+            adb shell pm list packages | grep forceracing
+            adb shell am start -n in.forceracing.pitwall/.MainActivity
+            sleep 50
+            adb shell dumpsys window | grep -E "mCurrentFocus|mFocusedApp" || true
+            adb exec-out screencap -p > android-screen.png
+            adb logcat -d > logcat.txt
+            echo "=== python/pit wall log ==="
+            grep -iE "Force Racing|chaquopy|python" logcat.txt | tail -n 40 || true
+            echo "=== fatal errors ==="
+            grep -iE "FATAL EXCEPTION|AndroidRuntime.*E " logcat.txt | tail -n 30 || true
+            if grep -qi "Force Racing pit wall listening" logcat.txt; then echo "SERVER_OK"; else echo "SERVER_NOT_FOUND"; fi
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: android-verify
+          path: |
+            android-screen.png
+            logcat.txt
