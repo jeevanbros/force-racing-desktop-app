@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0f1116">
+
+    <WebView
+        android:id="@+id/web"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <LinearLayout
+        android:id="@+id/splash"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#000000"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="32dp">
+
+        <ImageView
+            android:layout_width="132dp"
+            android:layout_height="132dp"
+            android:contentDescription="Force Racing"
+            android:src="@drawable/logo" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="22dp"
+            android:fontFamily="sans-serif-black"
+            android:letterSpacing="0.22"
+            android:text="FORCE RACING"
+            android:textColor="#f5f7fb"
+            android:textSize="22sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:fontFamily="sans-serif-medium"
+            android:letterSpacing="0.08"
+            android:text="DREAM. BUILD. RACE."
+            android:textColor="#e11d2e"
+            android:textSize="11sp" />
+
+        <TextView
+            android:id="@+id/splash_status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="26dp"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="center"
+            android:lineSpacingExtra="4dp"
+            android:text="Starting pit wall…"
+            android:textColor="#8b93a7"
+            android:textSize="12sp" />
+    </LinearLayout>
+</FrameLayout>

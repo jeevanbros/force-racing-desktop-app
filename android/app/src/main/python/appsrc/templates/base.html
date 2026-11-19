@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="Force Racing - Formula Student Team from KITS Warangal. Official engineering operations and championship portal.">
+  <meta name="theme-color" id="meta-theme-color" content="#0b0d12">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+
+  <title>{% block title %}Force Racing{% endblock %}</title>
+
+  <!-- Preconnect to Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;0,800;0,900;1,700;1,800;1,900&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <!-- Handcrafted Stylesheet -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+  <!-- Premium UI Layer (isolated module: depth, glass, micro-interactions) -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/premium.css') }}">
+
+  <!-- Dynamic Phone Theme Connection (Directly mirrors phone/OS theme: dark or light) -->
+  <script>
+    (function() {
+      try {
+        localStorage.removeItem('force_theme');
+        var mediaQuery = window.matchMedia('(prefers-color-scheme: light)');
+        function applyPhoneTheme(e) {
+          var isLight = e ? e.matches : mediaQuery.matches;
+          var theme = isLight ? 'light' : 'dark';
+          document.documentElement.setAttribute('data-theme', theme);
+          var meta = document.getElementById('meta-theme-color');
+          if (meta) {
+            meta.setAttribute('content', isLight ? '#f4f6fb' : '#0b0d12');
+          }
+        }
+        applyPhoneTheme(mediaQuery);
+        if (mediaQuery.addEventListener) {
+          mediaQuery.addEventListener('change', applyPhoneTheme);
+        } else if (mediaQuery.addListener) {
+          mediaQuery.addListener(applyPhoneTheme);
+        }
+      } catch (err) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      }
+    })();
+  </script>
+
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+  <!-- Circular Pull-to-Refresh Indicator (Mobile & Desktop Gesture) -->
+  <div id="ptr-indicator" class="ptr-indicator" aria-hidden="true" role="status">
+    <div class="ptr-track" id="ptr-track">
+      <div class="ptr-badge">
+        <svg class="ptr-progress-ring" viewBox="0 0 44 44" aria-hidden="true">
+          <circle class="ptr-ring-bg" cx="22" cy="22" r="18" fill="none" stroke-width="3"></circle>
+          <circle class="ptr-ring-fill" id="ptr-ring-fill" cx="22" cy="22" r="18" fill="none" stroke-width="3"></circle>
+        </svg>
+        <div class="ptr-icon-center">
+          <i class="fa-solid fa-rotate" id="ptr-center-icon"></i>
+        </div>
+      </div>
+      <div class="ptr-text-bubble">
+        <span id="ptr-status-label" class="ptr-status-label">Pull to refresh</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Force Racing Performance Latency Loader Overlay -->
+  <div id="fr-loading-overlay" class="fr-loading-overlay" role="status" aria-live="polite" aria-busy="false" aria-hidden="true">
+    <div class="fr-loader-container">
+      <div class="fr-loader-spinner-wrap">
+        <!-- Circular Chase Dot Ring (12 Glowing Red & Gold Orbit Dots) -->
+        <div class="fr-loader-ring" aria-hidden="true">
+          <div class="fr-loader-dot" style="--dot-i: 0;"></div>
+          <div class="fr-loader-dot" style="--dot-i: 1;"></div>
+          <div class="fr-loader-dot" style="--dot-i: 2;"></div>
+          <div class="fr-loader-dot" style="--dot-i: 3;"></div>
+          <div class="fr-loader-dot" style="--dot-i: 4;"></div>
+          <div class="fr-loader-dot" style="--dot-i: 5;"></div>
+          <div class="fr-loader-dot" style="--dot-i: 6;"></div>
+          <div class="fr-loader-dot" style="--dot-i: 7;"></div>
+          <div class="fr-loader-dot" style="--dot-i: 8;"></div>
+          <div class="fr-loader-dot" style="--dot-i: 9;"></div>
+          <div class="fr-loader-dot" style="--dot-i: 10;"></div>
+          <div class="fr-loader-dot" style="--dot-i: 11;"></div>
+        </div>
+
+        <!-- Official Centered Force Racing Logo -->
+        <div class="fr-loader-logo-wrap">
+          <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Force Racing Logo" class="fr-loader-logo">
+        </div>
+      </div>
+
+      <div class="fr-loader-brand">FORCE RACING</div>
+      <div class="fr-loader-status" id="fr-loader-status">DREAM. BUILD. RACE. &mdash; Loading...</div>
+      <div class="fr-loader-subtext">Preparing your pit wall</div>
+    </div>
+  </div>
+
+  <!-- Offline & Network Disconnection Notification Toast -->
+  <div id="network-status-toast" class="network-status-toast" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="network-toast-inner">
+      <span class="network-toast-indicator" id="network-status-dot"></span>
+      <span class="network-toast-icon" id="network-status-icon">⚠️</span>
+      <span class="network-toast-message" id="network-status-message">Internet disconnected</span>
+      <button type="button" class="network-toast-close" id="network-status-close" aria-label="Dismiss network alert">&times;</button>
+    </div>
+  </div>
+
+  <!-- Software Update Notification Banner -->
+  <aside id="app-update-banner" class="app-update-banner" style="display: none;" role="region" aria-label="Software Update Alert">
+    <div class="container update-banner-inner">
+      <div class="update-banner-content">
+        <span class="update-banner-text">
+          ⚡ <strong>NEW APP UPDATE:</strong> Force Racing v<span id="update-new-version">2.1.0</span> is available!
+        </span>
+      </div>
+      <div class="update-banner-actions">
+        <button type="button" id="btn-update-now" class="btn btn-sm btn-update-now">
+          <i class="fa-solid fa-rotate"></i> UPDATE NOW
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Sticky Top Navigation -->
+  <header class="navbar" role="banner">
+    <div class="container navbar-inner">
+      <!-- Brand Logo (Top Left Corner) -->
+      <a href="{{ url_for('main.home') }}" class="navbar-brand" aria-label="Force Racing Home">
+        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Force Racing Logo" class="brand-logo-img">
+        <span>Force Racing</span>
+      </a>
+
+      <!-- User Profile & Actions (Top Right Corner) -->
+      <div class="navbar-actions">
+
+        <!-- Pit link status (red when offline) -->
+        <span id="fr-link-status" class="fr-link-status" role="status" aria-live="polite">
+          <span class="fr-link-dot"></span>
+          <span class="fr-link-text">PIT NET <b>OK</b></span>
+        </span>
+
+        {% if user %}
+          <!-- Logged-in Profile Pill -->
+          <a href="{{ url_for('members.profile') }}" class="user-menu-pill" title="View profile">
+            <span class="user-avatar-initials">
+              {{ user.full_name[:2] if user.full_name else (user.username[:2] if user.username else 'FR') }}
+            </span>
+            <div class="user-menu-info">
+              <span class="user-name-text">{{ user.full_name.split(' ')[0] if user.full_name else user.username }}</span>
+              <span class="badge badge-role {% if user.role in ['Captain', 'Vice Captain'] %}role-captain{% elif user.role == 'Manager' %}role-manager{% elif user.role == 'Subsystem Lead' %}role-subsystem-lead{% else %}role-member{% endif %}">
+                {{ user.role }}
+              </span>
+            </div>
+          </a>
+
+          <!-- Logout Button -->
+          <form action="{{ url_for('auth.logout') if 'auth.logout' in current_app.view_functions else '/auth/logout' }}" method="POST" class="inline-form" style="margin: 0;">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="btn btn-sm btn-outline-danger" title="Sign out" aria-label="Sign out">
+              <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            </button>
+          </form>
+        {% endif %}
+      </div>
+    </div>
+  </header>
+
+  <!-- Flash Toast Notifications -->
+  <aside class="toast-container" id="toast-container" aria-live="polite" aria-atomic="true">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="toast toast-{{ category }} animate-slide-in" role="alert">
+            <div class="toast-icon">
+              {% if category == 'success' %}
+                <i class="fa-solid fa-circle-check"></i>
+              {% elif category in ['danger', 'error'] %}
+                <i class="fa-solid fa-triangle-exclamation"></i>
+              {% elif category == 'warning' %}
+                <i class="fa-solid fa-circle-exclamation"></i>
+              {% else %}
+                <i class="fa-solid fa-circle-info"></i>
+              {% endif %}
+            </div>
+            <div class="toast-message">{{ message }}</div>
+            <button type="button" class="toast-close" onclick="this.parentElement.remove()" aria-label="Close notification">
+              &times;
+            </button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+  </aside>
+
+  <!-- Main Viewport Content -->
+  <main id="main-content" class="main-content" role="main">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Clean Professional Footer -->
+  <footer class="app-footer" role="contentinfo">
+    <div class="container">
+      <div class="fr-footer-band">
+        <div class="fr-footer-brand">
+          <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Force Racing Logo" class="brand-logo-img">
+          <div>
+            <span class="racing-title fr-footer-title">Force Racing</span>
+            <p class="fr-footer-tag">Formula Student team of KITS Warangal. Designing, fabricating and racing high-performance prototypes.</p>
+          </div>
+        </div>
+        <div class="footer-social-links fr-footer-social">
+          <a href="https://www.instagram.com/forceracing/" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+          <a href="https://www.linkedin.com/company/force-racing-kits/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+          <a href="https://www.youtube.com/@forceracing" target="_blank" rel="noopener noreferrer" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
+        </div>
+      </div>
+      <div class="fr-footer-bottom">
+        <span>&copy; {{ now.year }} Force Racing. Kakatiya Institute of Technology and Science, Warangal.</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Bottom Navigation Bar (Mobile / Responsive) -->
+  <nav class="pit-bottom-nav" role="navigation" aria-label="Bottom Navigation">
+    <a href="{{ url_for('main.home') }}" class="bottom-nav-item {% if request.endpoint == 'main.home' %}active{% endif %}" title="Home">
+      <i class="fa-solid fa-house"></i>
+      <span>Home</span>
+    </a>
+    
+    <a href="{{ url_for('main.garage') }}" class="bottom-nav-item {% if request.endpoint == 'main.garage' %}active{% endif %}" title="Garage">
+      <i class="fa-solid fa-car"></i>
+      <span>Garage</span>
+    </a>
+    
+    <a href="{{ url_for('main.cad_hub') }}" class="bottom-nav-item bottom-nav-send {% if request.endpoint == 'main.cad_hub' %}active{% endif %}" title="Send CAD">
+      <div class="bottom-send-bubble">
+        <i class="fa-solid fa-paper-plane"></i>
+      </div>
+      <span>CAD</span>
+    </a>
+    
+    <a href="{{ url_for('tasks.dashboard') if user else url_for('main.crew') }}" 
+       class="bottom-nav-item {% if 'tasks' in (request.endpoint or '') %}active{% endif %}" title="Tasks">
+      <i class="fa-solid fa-list-check"></i>
+      <span>Tasks</span>
+    </a>
+    
+    <a href="{{ url_for('main.account') }}" class="bottom-nav-item {% if 'profile' in (request.endpoint or '') or 'account' in (request.endpoint or '') %}active{% endif %}" title="Account">
+      {% if user %}
+        <div class="bottom-avatar-icon">
+          {{ user.full_name[:2].upper() if user.full_name else 'FR' }}
+        </div>
+      {% else %}
+        <i class="fa-solid fa-user"></i>
+      {% endif %}
+      <span>Account</span>
+    </a>
+  </nav>
+
+  <!-- Main JavaScript -->
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+  <!-- Premium Motion & Command Layer (isolated module) -->
+  <script src="{{ url_for('static', filename='js/motion.js') }}"></script>
+
+  <!-- Software Update Manager Script -->
+  <script>
+    (function() {
+      var STORAGE_KEY = 'forceracing_app_version';
+
+      function parseVersion(v) {
+        if (!v) return [0];
+        return String(v).split('.').map(function(n) {
+          return parseInt(n, 10) || 0;
+        });
+      }
+
+      function isNewer(serverVer, localVer) {
+        if (!localVer) return true;
+        var s = parseVersion(serverVer);
+        var l = parseVersion(localVer);
+        var len = Math.max(s.length, l.length);
+        for (var i = 0; i < len; i++) {
+          var a = s[i] || 0;
+          var b = l[i] || 0;
+          if (a > b) return true;
+          if (a < b) return false;
+        }
+        return false;
+      }
+
+      function checkAppUpdate() {
+        fetch('/api/app-version')
+          .then(function(res) {
+            if (!res.ok) throw new Error('Status ' + res.status);
+            return res.json();
+          })
+          .then(function(data) {
+            if (!data || !data.version) return;
+            var serverVer = String(data.version);
+            var localVer = localStorage.getItem(STORAGE_KEY);
+
+            // If server version is newer or user hasn't acknowledged
+            if (!localVer || isNewer(serverVer, localVer)) {
+              var banner = document.getElementById('app-update-banner');
+              var verSpan = document.getElementById('update-new-version');
+              if (verSpan) verSpan.textContent = serverVer;
+              if (banner) banner.style.display = 'block';
+
+              var btn = document.getElementById('btn-update-now');
+              if (btn) {
+                btn.onclick = function() {
+                  btn.disabled = true;
+                  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> UPDATING...';
+                  localStorage.setItem(STORAGE_KEY, serverVer);
+
+                  if ('caches' in window) {
+                    caches.keys().then(function(cacheNames) {
+                      return Promise.all(
+                        cacheNames.map(function(cacheName) {
+                          return caches.delete(cacheName);
+                        })
+                      );
+                    }).then(function() {
+                      window.location.reload(true);
+                    }).catch(function() {
+                      window.location.reload(true);
+                    });
+                  } else {
+                    window.location.reload(true);
+                  }
+                };
+              }
+            }
+          })
+          .catch(function(err) {
+            // Version check is non-blocking
+          });
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', checkAppUpdate);
+      } else {
+        checkAppUpdate();
+      }
+    })();
+  </script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      if (window.showFRLoader) window.showFRLoader('DREAM. BUILD. RACE. — Loading...');
+      window.setTimeout(function () { if (window.hideFRLoader) window.hideFRLoader(); }, 900);
+    });
+  </script>
+  <script>
+    (function () {
+      function syncLink() {
+        var chip = document.getElementById('fr-link-status');
+        if (!chip) return;
+        var label = chip.querySelector('.fr-link-text');
+        var online = navigator.onLine;
+        chip.classList.toggle('is-offline', !online);
+        if (label) label.innerHTML = online ? 'PIT NET <b>OK</b>' : 'PIT NET <b>DOWN</b>';
+      }
+      window.addEventListener('online', syncLink);
+      window.addEventListener('offline', syncLink);
+      document.addEventListener('DOMContentLoaded', syncLink);
+      syncLink();
+    })();
+  </script>  {% block extra_js %}{% endblock %}
+</body>
+</html>
