@@ -1,0 +1,24 @@
+plugins { id 'com.android.application' }
+
+android {
+    namespace 'in.forceracing.pitwall'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "in.forceracing.pitwall"
+        minSdk 23
+        targetSdk 34
+        versionCode 240
+        versionName "2.4.0"
+    }
+
+    buildTypes {
+        release { minifyEnabled false }
+        debug { minifyEnabled false }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
