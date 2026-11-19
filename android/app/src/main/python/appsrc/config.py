@@ -21,7 +21,7 @@ if os.path.exists(dotenv_path):
 class Config:
     """Base application configuration loaded from environment."""
     SECRET_KEY = os.getenv('SECRET_KEY', 'default-dev-secret-key-forceracing-2026')
-    APP_VERSION = os.getenv('APP_VERSION', '2.3.0')
+    APP_VERSION = os.getenv('APP_VERSION', '2.5.0')
     
     # Event Countdown Target
     SUPRA_DATE = os.getenv('SUPRA_DATE', '2027-07-15T09:00:00')
