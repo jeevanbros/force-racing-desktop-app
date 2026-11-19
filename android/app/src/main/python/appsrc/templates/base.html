@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -113,7 +113,7 @@
   <div id="network-status-toast" class="network-status-toast" role="alert" aria-live="assertive" aria-atomic="true">
     <div class="network-toast-inner">
       <span class="network-toast-indicator" id="network-status-dot"></span>
-      <span class="network-toast-icon" id="network-status-icon">⚠️</span>
+      <span class="network-toast-icon" id="network-status-icon">âš ï¸</span>
       <span class="network-toast-message" id="network-status-message">Internet disconnected</span>
       <button type="button" class="network-toast-close" id="network-status-close" aria-label="Dismiss network alert">&times;</button>
     </div>
@@ -345,7 +345,7 @@
   </script>
   <script>
     document.addEventListener('DOMContentLoaded', function () {
-      if (window.showFRLoader) window.showFRLoader('DREAM. BUILD. RACE. — Loading...');
+      if (window.showFRLoader) window.showFRLoader('DREAM. BUILD. RACE. â€” Loading...');
       window.setTimeout(function () { if (window.hideFRLoader) window.hideFRLoader(); }, 900);
     });
   </script>
@@ -365,5 +365,26 @@
       syncLink();
     })();
   </script>  {% block extra_js %}{% endblock %}
+
+  <!-- Haptic feedback (Android): taps, submits, link state -->
+  <script>
+    (function () {
+      if (!("vibrate" in navigator)) return;
+      function buzz(pattern) { try { navigator.vibrate(pattern); } catch (e) {} }
+      document.addEventListener("click", function (e) {
+        var el = e.target.closest("button, .btn, .nav-link, .pit-bottom-nav a, .quicklink-card, .task-card, .fleet-card, a[href]");
+        if (!el || el.disabled) return;
+        buzz(el.classList.contains("btn-primary") ? 14 : 9);
+      }, { passive: true });
+      document.addEventListener("submit", function () { buzz(20); }, true);
+      window.addEventListener("offline", function () { buzz([28, 40, 28]); });
+      window.addEventListener("online", function () { buzz(12); });
+      document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".navbar a, .pit-bottom-nav a").forEach(function (a) {
+          a.addEventListener("touchstart", function () { buzz(6); }, { passive: true });
+        });
+      });
+    })();
+  </script>
 </body>
 </html>
