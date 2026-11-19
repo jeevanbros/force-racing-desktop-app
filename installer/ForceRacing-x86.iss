@@ -1,4 +1,4 @@
-; Force Racing - Windows x86 (32-bit) installer
+﻿; Force Racing - Windows x86 (32-bit) installer
 #define AppName "Force Racing"
 #define AppVersion "2.5.0"
 
@@ -35,8 +35,8 @@ Name: "desktopicon"; Description: "Create a &desktop shortcut"; GroupDescription
 Source: "..\..\AppData\Local\Temp\opencode\fr-x86-clean\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
-Name: "{autoprograms}\{#AppName}"; Filename: "{app}\python\pythonw.exe"; Parameters: "desktop_launcher.py"; WorkingDir: "{app}"; IconFilename: "{app}\ForceRacing-PC-x86.exe"; Comment: "Force Racing Pit Wall"
-Name: "{autodesktop}\{#AppName}"; Filename: "{app}\python\pythonw.exe"; Parameters: "desktop_launcher.py"; WorkingDir: "{app}"; IconFilename: "{app}\ForceRacing-PC-x86.exe"; Tasks: desktopicon; Comment: "Force Racing Pit Wall"
+Name: "{autoprograms}\{#AppName}"; Filename: "{app}\python\pythonw.exe"; Parameters: "desktop_launcher.py"; WorkingDir: "{app}"; IconFilename: "{app}\static\images\icon.ico"; Comment: "Force Racing Pit Wall"
+Name: "{autodesktop}\{#AppName}"; Filename: "{app}\python\pythonw.exe"; Parameters: "desktop_launcher.py"; WorkingDir: "{app}"; IconFilename: "{app}\static\images\icon.ico"; Tasks: desktopicon; Comment: "Force Racing Pit Wall"
 
 [Run]
 Filename: "{app}\python\pythonw.exe"; Parameters: "desktop_launcher.py"; WorkingDir: "{app}"; Description: "Launch {#AppName}"; Flags: nowait postinstall skipifsilent
