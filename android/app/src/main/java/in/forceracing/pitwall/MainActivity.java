@@ -1,7 +1,10 @@
 package in.forceracing.pitwall;
 
 import android.app.Activity;
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -12,6 +15,9 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import com.chaquo.python.Python;
 import com.chaquo.python.android.AndroidPlatform;
@@ -98,6 +104,33 @@ public class MainActivity extends Activity {
                 hideSplash();
             }
         }, 25000);
+
+        // Ask for the permissions the app actually uses (notifications, media for uploads).
+        ui.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                requestAppPermissions();
+            }
+        }, 1500);
+    }
+
+    private void requestAppPermissions() {
+        List<String> ask = new ArrayList<>();
+        if (Build.VERSION.SDK_INT >= 33) {
+            ask.add(Manifest.permission.POST_NOTIFICATIONS);
+            ask.add(Manifest.permission.READ_MEDIA_IMAGES);
+        } else if (Build.VERSION.SDK_INT >= 24) {
+            ask.add(Manifest.permission.READ_EXTERNAL_STORAGE);
+        }
+        List<String> missing = new ArrayList<>();
+        for (String p : ask) {
+            if (checkSelfPermission(p) != PackageManager.PERMISSION_GRANTED) {
+                missing.add(p);
+            }
+        }
+        if (!missing.isEmpty()) {
+            requestPermissions(missing.toArray(new String[0]), 42);
+        }
     }
 
     private String buildDetail(Throwable t) {

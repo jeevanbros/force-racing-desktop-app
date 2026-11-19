@@ -7,6 +7,11 @@
   <meta name="theme-color" id="meta-theme-color" content="#0b0d12">
   <meta name="csrf-token" content="{{ csrf_token() }}">
 
+  <!-- App identity (window / taskbar / home screen icon) -->
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/app-icon.png') }}">
+  <link rel="shortcut icon" href="{{ url_for('static', filename='images/app-icon.png') }}">
+  <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/app-icon.png') }}">
+
   <title>{% block title %}Force Racing{% endblock %}</title>
 
   <!-- Preconnect to Google Fonts -->

@@ -199,7 +199,7 @@ def register():
     """Alias for /signup to ensure friendly routing."""
     return signup()
 
-@auth_bp.route('/logout')
+@auth_bp.route('/logout', methods=['GET', 'POST'])
 def logout():
     """Clear user session and redirect to pit home page."""
     session.clear()
