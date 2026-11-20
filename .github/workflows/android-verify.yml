@@ -27,13 +27,16 @@ jobs:
           script: |
             adb install -r ForceRacing-Android-APK.apk
             adb shell pm list packages | grep forceracing
+            adb shell pm grant in.forceracing.pitwall android.permission.POST_NOTIFICATIONS || true
+            adb shell pm grant in.forceracing.pitwall android.permission.READ_MEDIA_IMAGES || true
+            adb shell pm grant in.forceracing.pitwall android.permission.READ_EXTERNAL_STORAGE || true
             adb shell am start -n in.forceracing.pitwall/.MainActivity
-            sleep 50
+            sleep 55
             adb shell dumpsys window | grep -E "mCurrentFocus|mFocusedApp" || true
             adb exec-out screencap -p > android-screen.png
             adb logcat -d > logcat.txt
             echo "=== python/pit wall log ==="
-            grep -iE "Force Racing|chaquopy|python" logcat.txt | tail -n 40 || true
+            grep -iE "pit wall listening|Force Racing" logcat.txt | tail -n 20 || true
             echo "=== fatal errors ==="
             grep -iE "FATAL EXCEPTION|AndroidRuntime.*E " logcat.txt | tail -n 30 || true
             if grep -qi "Force Racing pit wall listening" logcat.txt; then echo "SERVER_OK"; else echo "SERVER_NOT_FOUND"; fi
