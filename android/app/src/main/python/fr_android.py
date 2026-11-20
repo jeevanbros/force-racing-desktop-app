@@ -52,17 +52,40 @@ def prepare():
     return dst
 
 
+def _log(message):
+    try:
+        path = os.path.join(_home(), "fr-boot.log")
+        with open(path, "a") as fh:
+            fh.write(str(message) + "\n")
+    except Exception:
+        pass
+    print(message)
+
+
 def start_server():
     """Start Flask on 127.0.0.1 and return the bound port."""
+    try:
+        return _start_server()
+    except Exception:
+        _log(traceback.format_exc())
+        raise
+
+
+def _start_server():
+    _log("boot: prepare")
     app_dir = prepare()
+    _log("boot: prepared " + app_dir)
     os.chdir(app_dir)
 
     import database
     from app import create_app
 
+    _log("boot: init_db")
     database.init_db()
+    _log("boot: seed_db")
     database.seed_db()
 
+    _log("boot: create_app")
     application = create_app()
 
     from werkzeug.serving import make_server
@@ -78,7 +101,7 @@ def start_server():
     )
     worker.start()
 
-    print("Force Racing pit wall listening on 127.0.0.1:%d" % port)
+    _log("Force Racing pit wall listening on 127.0.0.1:%d" % port)
     return port
 
 

@@ -27,6 +27,7 @@ public class MainActivity extends Activity {
     private WebView web;
     private View splash;
     private TextView status;
+    private volatile boolean failed = false;
     private final Handler ui = new Handler(Looper.getMainLooper());
 
     @Override
@@ -83,6 +84,7 @@ public class MainActivity extends Activity {
                         }
                     });
                 } catch (final Throwable t) {
+                    failed = true;
                     final String detail = buildDetail(t);
                     ui.post(new Runnable() {
                         @Override
@@ -101,7 +103,7 @@ public class MainActivity extends Activity {
         ui.postDelayed(new Runnable() {
             @Override
             public void run() {
-                hideSplash();
+                if (!failed) hideSplash();
             }
         }, 25000);
 
@@ -141,6 +143,10 @@ public class MainActivity extends Activity {
             sb.append(": ").append(t.getMessage());
         }
         sb.append("\n\nClose the app and open it again. If this repeats, reinstall Force Racing.");
+        StackTraceElement[] st = t.getStackTrace();
+        for (int i = 0; i < st.length && i < 6; i++) {
+            sb.append("\n").append(st[i].toString());
+        }
         return sb.toString();
     }
 

@@ -1,4 +1,4 @@
-name: Verify Android APK
+﻿name: Verify Android APK
 
 on:
   workflow_dispatch:
@@ -31,10 +31,13 @@ jobs:
             adb shell pm grant in.forceracing.pitwall android.permission.READ_MEDIA_IMAGES || true
             adb shell pm grant in.forceracing.pitwall android.permission.READ_EXTERNAL_STORAGE || true
             adb shell am start -n in.forceracing.pitwall/.MainActivity
-            sleep 55
+            sleep 40
             adb shell dumpsys window | grep -E "mCurrentFocus|mFocusedApp" || true
             adb exec-out screencap -p > android-screen.png
             adb logcat -d > logcat.txt
+            adb shell run-as in.forceracing.pitwall cat files/fr-boot.log > fr-boot.log 2>/dev/null || true
+            echo '=== boot log ==='
+            cat fr-boot.log || true
             echo "=== python/pit wall log ==="
             grep -iE "pit wall listening|Force Racing" logcat.txt | tail -n 20 || true
             echo "=== fatal errors ==="
@@ -48,3 +51,4 @@ jobs:
           path: |
             android-screen.png
             logcat.txt
+            fr-boot.log
