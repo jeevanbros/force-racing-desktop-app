@@ -1333,3 +1333,20 @@ html.fr-lite .fr-ticker-track { animation-duration: 60s; }
   background: rgba(15, 20, 32, 0.94);
   border-top-color: var(--border-subtle);
 }
+/* ============================================================
+   v2.5.1 - Phone layout fixes (Android WebView / small screens)
+   ============================================================ */
+@media (max-width: 640px) {
+  html, body { overflow-x: hidden; }
+  .container { padding-left: 14px; padding-right: 14px; }
+  .navbar-inner { gap: 8px; }
+  .navbar-brand { font-size: 1.12rem; gap: 8px; min-width: 0; }
+  .navbar-brand > span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .brand-logo-img { width: 34px; height: 34px; }
+  .fr-link-status { display: none; }
+  .card-header > div:first-child { flex-wrap: wrap; gap: 6px; }
+  .card-title { font-size: 1.3rem !important; overflow-wrap: break-word; }
+  .badge { letter-spacing: 0.02em; }
+  .font-mono.text-muted { font-size: 0.66rem !important; letter-spacing: 0.04em !important; }
+  input, select, textarea { font-size: 16px !important; }
+}
