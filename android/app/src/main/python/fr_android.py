@@ -1,8 +1,8 @@
 """Force Racing - Android runtime entry point (Chaquopy).
 
-Extracts the bundled Flask application to the app's private storage, starts
-the Pit Wall server on the loopback interface, and returns the port so the
-native WebView can load the real in-app experience.
+Runs the bundled Flask application straight from Chaquopy's extracted assets
+and keeps all writable state (SQLite database, uploads, exports) in the app's
+private storage.
 """
 
 import os
@@ -25,41 +25,38 @@ def _home():
     return _here()
 
 
-def prepare():
-    """Copy the bundled app into writable storage and return its path."""
-    src = os.path.join(_here(), "appsrc")
-    dst = os.path.join(_home(), "forceracing")
-
-    keep_db = os.path.exists(os.path.join(dst, "forceracing_app.db"))
-    ignore = shutil.ignore_patterns("forceracing_app.db", "__pycache__", "*.pyc") if keep_db else \
-        shutil.ignore_patterns("__pycache__", "*.pyc")
-
-    os.makedirs(dst, exist_ok=True)
-    shutil.copytree(src, dst, dirs_exist_ok=True, ignore=ignore)
-
-    for sub in ("data", os.path.join("static", "uploads", "cad")):
-        os.makedirs(os.path.join(dst, sub), exist_ok=True)
-
-    if dst not in sys.path:
-        sys.path.insert(0, dst)
-
-    try:
-        with open(os.path.join(dst, ".bundle-version"), "w") as fh:
-            fh.write(BUNDLE_VERSION)
-    except Exception:
-        pass
-
-    return dst
-
-
 def _log(message):
     try:
-        path = os.path.join(_home(), "fr-boot.log")
-        with open(path, "a") as fh:
+        with open(os.path.join(_home(), "fr-boot.log"), "a") as fh:
             fh.write(str(message) + "\n")
     except Exception:
         pass
     print(message)
+
+
+def prepare():
+    """Point the app at writable storage and return its code directory."""
+    app_dir = os.path.join(_here(), "appsrc")
+    home = _home()
+
+    db_path = os.path.join(home, "forceracing.db")
+    if not os.path.exists(db_path):
+        shutil.copyfile(os.path.join(app_dir, "forceracing_app.db"), db_path)
+
+    data_dir = os.path.join(home, "fr-data")
+    uploads = os.path.join(home, "fr-uploads")
+    os.makedirs(data_dir, exist_ok=True)
+    os.makedirs(uploads, exist_ok=True)
+
+    os.environ["DATABASE_PATH"] = db_path
+    os.environ["DATA_DIR"] = data_dir
+    os.environ["UPLOAD_FOLDER"] = uploads
+
+    if app_dir not in sys.path:
+        sys.path.insert(0, app_dir)
+
+    _log("prepare: code=%s db=%s" % (app_dir, db_path))
+    return app_dir
 
 
 def start_server():
@@ -72,18 +69,21 @@ def start_server():
 
 
 def _start_server():
-    _log("boot: prepare")
     app_dir = prepare()
-    _log("boot: prepared " + app_dir)
-    os.chdir(app_dir)
+
+    import config as config_module
+    config_module.Config.UPLOAD_FOLDER = os.environ["UPLOAD_FOLDER"]
+    os.makedirs(config_module.Config.UPLOAD_FOLDER, exist_ok=True)
 
     import database
-    from app import create_app
 
     _log("boot: init_db")
     database.init_db()
+
     _log("boot: seed_db")
     database.seed_db()
+
+    from app import create_app
 
     _log("boot: create_app")
     application = create_app()
