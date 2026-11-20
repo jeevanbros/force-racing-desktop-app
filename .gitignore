@@ -33,3 +33,7 @@ Thumbs.db
 *.swo
 .vscode/
 .idea/
+
+# Installer build output (only root release binaries are published)
+installer/output/
+installer/output-x86/
