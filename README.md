@@ -10,9 +10,9 @@
 
 | Build | Download | Size |
 |---|---|---|
-| **Force Racing X64** (installer) | [ForceRacing-X64-Setup.exe](https://github.com/jeevanbros/force-racing-desktop-app/raw/main/ForceRacing-X64-Setup.exe) | 32.6 MB |
+| **Force Racing X64** (installer) | [ForceRacing-X64-Setup.exe](https://github.com/jeevanbros/force-racing-desktop-app/raw/main/ForceRacing-X64-Setup.exe) | 32.7 MB |
 | **Force Racing X32** (installer) | [ForceRacing-X32-Setup.exe](https://github.com/jeevanbros/force-racing-desktop-app/raw/main/ForceRacing-X32-Setup.exe) | 13.8 MB |
-| **Force Racing Android APK** | [ForceRacing-Android-APK.apk](https://github.com/jeevanbros/force-racing-desktop-app/raw/main/ForceRacing-Android-APK.apk) | 46.7 MB |
+| **Force Racing Android APK** | [ForceRacing-Android-APK.apk](https://github.com/jeevanbros/force-racing-desktop-app/raw/main/ForceRacing-Android-APK.apk) | 46.8 MB |
 | X64 portable (no installer) | [ForceRacing-X64-PC.exe](https://github.com/jeevanbros/force-racing-desktop-app/raw/main/ForceRacing-X64-PC.exe) | 42.6 MB |
 | X32 portable (zip) | [ForceRacing-X32.zip](https://github.com/jeevanbros/force-racing-desktop-app/raw/main/ForceRacing-X32.zip) | 17.6 MB |
 
@@ -30,6 +30,7 @@ Windows may show "Unknown publisher" because the build is not code-signed: choos
 1. Copy `ForceRacing-Android-APK.apk` to the phone and open it.
 2. Allow "Install unknown apps" for the browser/file manager you used.
 3. Install and launch **Force Racing**.
+4. Allow the notification / photo prompts on first launch (used for alerts and uploads).
 
 The APK embeds Python 3.11 and the Flask application itself (Chaquopy). It does **not** load the website — the
 templates, styles, database and server all run on the phone. Works offline; no account or network is needed to open
@@ -48,3 +49,5 @@ year of study, subsystem, role, password hash and consent in the app database.
 - Desktop builds bundle their own Python runtime and SQLite database; user data stays on the machine.
 - Android data is stored in the app's private storage and survives restarts.
 - The app follows the operating system's light/dark preference.
+- Android build includes haptic feedback on taps, form submits and connection changes.
+- Version: 2.5.1
