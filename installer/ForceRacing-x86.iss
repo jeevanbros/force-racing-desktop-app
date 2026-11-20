@@ -1,6 +1,6 @@
 ﻿; Force Racing - Windows x86 (32-bit) installer
 #define AppName "Force Racing"
-#define AppVersion "2.5.0"
+#define AppVersion "2.5.1"
 
 [Setup]
 AppId={{9C1E4B62-7A5D-4F0A-9E3B-FR2026PITWALL}}
@@ -24,6 +24,7 @@ ArchitecturesAllowed=x86compatible
 MinVersion=10.0
 CloseApplications=yes
 RestartApplications=no
+UsePreviousAppDir=no
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"

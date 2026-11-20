@@ -1,6 +1,6 @@
-; Force Racing - Windows installer (Inno Setup)
+﻿; Force Racing - Windows installer (Inno Setup)
 #define AppName "Force Racing"
-#define AppVersion "2.5.0"
+#define AppVersion "2.5.1"
 #define AppExe "ForceRacing.exe"
 
 [Setup]
@@ -27,6 +27,7 @@ ArchitecturesInstallIn64BitMode=x64compatible
 MinVersion=10.0
 CloseApplications=yes
 RestartApplications=no
+UsePreviousAppDir=no
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
